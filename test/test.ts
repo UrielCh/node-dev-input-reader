@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import { delay, DevInputReader, KbEvent, UnixTimeval, AllEventsType, SimpleEventsType } from "../src/";
+import { delay, DevInputReader, KbEvent, UnixTimeval, AllEventsType, SimpleEventsType, SynticEventsType, KbEvent2 } from "../src/";
 import KeysCodes from "../src/KeysCodes";
 
 DevInputReader.registerKey(288, 'PAD_X');
@@ -67,20 +67,39 @@ async function testAll() {
 function listenAction(reader: DevInputReader, actions: AllEventsType[]): string[] {
   const actionSet = new Set(actions);
   const array = [] as string[];
+
+
+  const pushEv = (t: string) => (ev: KbEvent2 | KbEvent) => {
+    let txt = `${t}${ev.keyName.replace(/KEY_/g, '')}`;
+    if ((ev as KbEvent2).keyCodePressed && (ev as KbEvent2).keyCodePressed.length)
+      txt += `[${(ev as KbEvent2).keyNamePressed.join(',').replace(/KEY_/g, '')}]`;
+    array.push(txt)
+  }
+
+
   if (actionSet.has("keyup"))
-    reader.on("keyup", (ev) => array.push(`up${ev.keyName}`));
+    reader.on("keyup", pushEv("up"));
   if (actionSet.has("keydown"))
-    reader.on("keydown", (ev) => array.push(`down${ev.keyName}`));
+    reader.on("keydown", pushEv("down"));
   if (actionSet.has("key"))
-    reader.on("key", (ev) => array.push(`key${ev.keyName}[${ev.keyNamePressed.join(',')}]`));
+    reader.on("key", pushEv('key'));
   if (actionSet.has("simple"))
-    reader.on("simple", (ev) => array.push(`simple${ev.keyName}[${ev.keyNamePressed.join(',')}]`));
+    reader.on("simple", pushEv('simple'));
   if (actionSet.has("double"))
-    reader.on("double", (ev) => array.push(`double${ev.keyName}[${ev.keyNamePressed.join(',')}]`));
+    reader.on("double", pushEv('double'));
   if (actionSet.has("long"))
-    reader.on("long", (ev) => array.push(`double${ev.keyName}[${ev.keyNamePressed.join(',')}]`));
+    reader.on("long", pushEv('long'));
   return array;
 }
+
+
+export enum TestKey {
+  B = 48,
+  N = 49,
+}
+
+
+
 
 describe('simple', () => {
   {
@@ -88,12 +107,12 @@ describe('simple', () => {
     const array = listenAction(reader, ['keyup', 'keydown']);
     const ev = (type: SimpleEventsType, keyCode: number) => privateDigestEvent(reader, newEvent(type, keyCode));
     it('single key', async () => {
-      ev('keydown', 48);
+      ev('keydown', TestKey.B);
       await delay(10);
-      ev('keyup', 48);
-      assert.strictEqual(array.join(','), 'downKEY_B,upKEY_B')
+      ev('keyup', TestKey.B);
+      assert.strictEqual(array.join(','), 'downB,upB')
       await delay(10);
-      assert.strictEqual(array.join(','), 'downKEY_B,upKEY_B')
+      assert.strictEqual(array.join(','), 'downB,upB')
     });
   }
 
@@ -105,12 +124,26 @@ describe('simple', () => {
     it('single key Adv', async () => {
       ev('keydown', 48);
       await delay(10);
-      ev('keyup', 48);
+      ev('keyup', TestKey.B);
       await delay(10);
-      assert.strictEqual(array.join(','), 'doubleKEY_B[KEY_B]')
+      assert.strictEqual(array.join(','), 'simpleB')
       await delay(10);
-      //assert.strictEqual(array.join(','), 'keyKEY_B')
     });
+    array.splice(0, array.length)
+
+    it('single key Adv', async () => {
+      ev('keydown', TestKey.B);
+      await delay(100);
+      ev('keydown', TestKey.N);
+      await delay(100);
+      ev('keyup', TestKey.B);
+      await delay(100);
+      ev('keyup', TestKey.N);
+      await delay(100);
+      assert.strictEqual(array.join(','), 'simpleB,simpleB[N],simpleN')
+      await delay(10);
+    });
+
   }
 
 });

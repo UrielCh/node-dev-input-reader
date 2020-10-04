@@ -107,14 +107,14 @@ export default class DevInputReader extends EventEmitter {
                         this.digestEvent(event);
                     }
                 });
-                else if (this.devType === 'js')
+            else if (this.devType === 'js')
                 this.data.on('data', (data: Buffer) => {
                     let event: JsEvent | null = this.parseJoystick(data);
                     if (event) {
                         this.emit('joystick', event)
                     }
                 });
-                else if (this.devType === 'mouse')
+            else if (this.devType === 'mouse')
                 this.data.on('data', (data: Buffer) => {
                     this.parseMouse(data);
                 });
@@ -164,20 +164,20 @@ export default class DevInputReader extends EventEmitter {
 
                 if (this.options.longPress) {
                     await delay(this.options.longPress);
-                }
 
-                if (keyStatus.state === KeyState.Down && keyStatus.down === event.time) {
-                    this.emit('long', {
-                        dev: this.dev,
-                        time: keyStatus.up,
-                        durationMs: this.options.longPress,
-                        keyCode: event.keyCode,
-                        keyName: event.keyName,
-                        type: event.type,
-                        keyCodePressed: [...this.keyCodePresses],
-                        keyNamePressed: [...this.keyNamePresses],
-                    } as KbEvent2);
-                    keyStatus.flush();
+                    if (keyStatus.state === KeyState.Down && keyStatus.down === event.time) {
+                        this.emit('long', {
+                            dev: this.dev,
+                            time: keyStatus.up,
+                            durationMs: this.options.longPress,
+                            keyCode: event.keyCode,
+                            keyName: event.keyName,
+                            type: event.type,
+                            keyCodePressed: [...this.keyCodePresses],
+                            keyNamePressed: [...this.keyNamePresses],
+                        } as KbEvent2);
+                        keyStatus.flush();
+                    }
                 }
                 break;
             case 'keyup':
