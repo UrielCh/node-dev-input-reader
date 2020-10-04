@@ -1,0 +1,39 @@
+{
+  "name": "dev-input-reader",
+  "version": "0.0.1",
+  "description": "read input from /dev/input/*",
+  "main": "src/index.js",
+  "keywords": [
+    "/dev/input",
+    "keyboard",
+    "event",
+    "linux"
+  ],
+  "author": "Uriel Chemouni <uchemouni@gmail.com>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UrielCh/node-dev-input-reader#readme"
+  },
+  "homepage": "https://github.com/UrielCh/node-dev-input-reader#readme",
+  "bugs": "https://github.com/UrielCh/node-dev-input-reader/issues",
+  "scripts": {
+    "build": "tsc -p .",
+    "build:watch": "tsc -p . --watch",
+    "prepare": "npm run build",
+    "clean": "rimraf src/*.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^14.11.2",
+    "rimraf": "^3.0.2",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.3"
+  },
+  "files": [
+    "src/*"
+  ]
+}
