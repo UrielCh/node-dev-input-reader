@@ -21,37 +21,15 @@ export interface JsEvent {
 }
 
 export interface KbEvent {
-    dev: string;
-    time: UnixTimeval,
-    keyCode: number;
-    keyName: string,
-    type: typeof EVENT_TYPES[number],
+    readonly dev: string;
+    readonly time: UnixTimeval,
+    readonly keyCode: number;
+    readonly keyName: string,
+    readonly type: typeof EVENT_TYPES[number],
 }
 
 export interface KbEvent2 extends KbEvent {
-    keyCodePressed: number[];
-    keyNamePressed: string[];
-    durationMs: number;
+    readonly keyCodePressed: number[];
+    readonly keyNamePressed: string[];
+    readonly durationMs: number;
 }
-
-export class KeyStatus {
-    status!: 'down' | 'up';
-    up!: UnixTimeval | null;
-    down!: UnixTimeval | null;
-    prevUp!: UnixTimeval | null;
-    prevDown!: UnixTimeval | null;
-
-    public constructor() {
-        this.flush();
-    }
-
-    public flush() {
-        this.status = 'up';
-        this.up = null;
-        this.down = null;
-        this.prevUp = null;
-        this.prevDown = null;
-    }
-
-}
-

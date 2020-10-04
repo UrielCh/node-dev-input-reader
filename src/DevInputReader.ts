@@ -2,9 +2,10 @@ import fs, { ReadStream } from 'fs';
 import { EventEmitter } from 'events';
 import KeysCodes from './KeysCodes';
 import delay from './delay';
-import { KbEvent2, JsEvent, KbEvent, KeyStatus } from './InputInterfaces';
+import { KbEvent2, JsEvent, KbEvent } from './InputInterfaces';
 import UnixTimeval from './UnixTimeval';
 import { SUPPORTED_USB_DEVICE_TYPES, SUPPORTED_USB_DEVICE_TYPES_SET, EVENT_TYPES } from './enums';
+import KeyInternalState, { KeyState } from './KeyInternalState';
 
 export const standardEvents = ['error', 'connecting'] as const;
 export const simpleEvents = ['keyup', 'keypress', 'keydown'] as const; // Keep this order
@@ -38,7 +39,7 @@ export default class DevInputReader extends EventEmitter {
         KeysCodes[id] = name;
     }
 
-    constructor(dev: string, options?: { retryInterval?: number }) {
+    constructor(dev: string, options?: DevInputReaderOption) {
         super();
         options = options || {};
         this.options = { ...options };
@@ -47,11 +48,11 @@ export default class DevInputReader extends EventEmitter {
 
     private async startLoop() {
         while (this.options.retryInterval) {
-            await delay(this.options.retryInterval);
             this.data = null;
             if (this.start()) {
                 return;
             }
+            await delay(this.options.retryInterval);
         }
     }
 
@@ -59,7 +60,11 @@ export default class DevInputReader extends EventEmitter {
         this.emit('connecting', '');
         let eventPath = '';
         // this.buffer = Buffer.alloc(this.bufferSize);
-        if (this.dev.startsWith('event'))
+        if (this.dev === 'dummy') {
+            // for test only
+            this.devType = 'event';
+            return true;
+        } else if (this.dev.startsWith('event'))
             eventPath = `/dev/input/${this.dev}`;
         else if (this.dev.startsWith('pci-'))
             eventPath = `/dev/input/by-path/${this.dev}`;
@@ -71,13 +76,15 @@ export default class DevInputReader extends EventEmitter {
             eventPath = `/dev/input/by-id/${this.dev}`;
         let lnk = eventPath;
         try {
-            fs.statSync(eventPath);
+            if (eventPath)
+                fs.statSync(eventPath);
         } catch (e) {
             this.emit('error', Error(`Can not find dev "${eventPath}"`));
             return false;
         }
         try {
-            lnk = fs.readlinkSync(eventPath, 'utf8');
+            if (eventPath)
+                lnk = fs.readlinkSync(eventPath, 'utf8');
         } catch (e) {
         }
         const m = lnk.match(/\/([a-z]+)\d+$/);
@@ -131,7 +138,7 @@ export default class DevInputReader extends EventEmitter {
         }
     }
 
-    private keyStatus: { [key: string]: KeyStatus } = {};
+    private keyStatus: { [key: string]: KeyInternalState } = {};
     private keyCodePresses: Set<number> = new Set();
     private keyNamePresses: Set<string> = new Set();
 
@@ -142,13 +149,13 @@ export default class DevInputReader extends EventEmitter {
 
         let keyStatus = this.keyStatus[event.keyCode];
         if (!keyStatus) {
-            keyStatus = new KeyStatus();
+            keyStatus = new KeyInternalState();
             this.keyStatus[event.keyCode] = keyStatus;
         }
         switch (event.type) {
             case 'keydown':
             case 'keypress':
-                keyStatus.status = 'down';
+                keyStatus.state = KeyState.Down;
                 keyStatus.prevDown = keyStatus.down;
                 keyStatus.down = event.time;
                 this.keyCodePresses.add(event.keyCode);
@@ -159,7 +166,7 @@ export default class DevInputReader extends EventEmitter {
                     await delay(this.options.longPress);
                 }
 
-                if (keyStatus.status === 'down' && keyStatus.down === event.time) {
+                if (keyStatus.state === KeyState.Down && keyStatus.down === event.time) {
                     this.emit('long', {
                         dev: this.dev,
                         time: keyStatus.up,
@@ -170,15 +177,19 @@ export default class DevInputReader extends EventEmitter {
                         keyCodePressed: [...this.keyCodePresses],
                         keyNamePressed: [...this.keyNamePresses],
                     } as KbEvent2);
+                    keyStatus.flush();
                 }
-
                 break;
             case 'keyup':
                 this.keyCodePresses.delete(event.keyCode);
                 if (event.keyName)
                     this.keyNamePresses.delete(event.keyName);
+                if (!keyStatus.down) {
+                    // a long press already occured
+                    return;
+                }
                 keyStatus.up = event.time;
-                if (keyStatus.status == 'down') {
+                if (keyStatus.state === KeyState.Down) {
                     this.emit('key', {
                         dev: this.dev,
                         time: keyStatus.up,
@@ -188,9 +199,8 @@ export default class DevInputReader extends EventEmitter {
                         type: event.type,
                     } as KbEvent2);
                 }
-                keyStatus.status = 'up';
+                keyStatus.state = KeyState.Up;
                 keyStatus.prevUp = keyStatus.up;
-
                 const durationDoubleMs = keyStatus.up.fromMs(keyStatus.prevDown);
                 if (this.options.doublePress && durationDoubleMs < this.options.doublePress) {
                     this.emit('double', {

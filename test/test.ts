@@ -1,4 +1,6 @@
-import { DevInputReader } from "../src/";
+import { read } from "fs";
+import { delay, DevInputReader, KbEvent, UnixTimeval } from "../src/";
+import KeysCodes from "../src/KeysCodes";
 
 DevInputReader.registerKey(288, 'PAD_X');
 DevInputReader.registerKey(289, 'PAD_A');
@@ -25,16 +27,46 @@ DevInputReader.registerKey(274, 'MOUSE_Clic_M');
 
 
 function startTest(node: string) {
-    const K0 = new DevInputReader(node, {retryInterval: 1000});
+    const K0 = new DevInputReader(node, { retryInterval: 500, longPress: 2000, doublePress: 300 });
+    // const K0 = new DevInputReader(node, {retryInterval: 5000} );
     K0.on('error', console.error)
-    .on('connecting', () => console.log('cnx...'))
-//    .on("keypress", (data) => console.log('keypress:', JSON.stringify(data)))
-    .on("simple", (data) => console.log('simple:', JSON.stringify(data)))
-    .on("double", (data) => console.log('double:', JSON.stringify(data)))
+        .on('connecting', () => console.log('cnx...'))
+        // .on("keypress", (data) => console.log('keypress:', JSON.stringify(data)))
+        .on("long", (data) => console.log('long:', JSON.stringify(data)))
+        .on("simple", (data) => console.log('simple:', JSON.stringify(data)))
+        .on("double", (data) => console.log('double:', JSON.stringify(data)))
 }
 //startTest('event5');
 //startTest('usb-0810_usb_gamepad-event-joystick');
-startTest('usb-Antecer_AmusingKeyPadK6-event-kbd');
+// startTest('usb-Antecer_AmusingKeyPadK6-event-kbd');
+
+
+async function testAll() {
+    const reader = new DevInputReader('dummy', { longPress: 2000, doublePress: 300 });
+    // const digestEvent = (reader: DevInputReader, event: KbEvent): Promise<void> => (reader as any).digestEvent(event);
+    const digestEvent = (event: KbEvent): Promise<void> => (reader as any).digestEvent(event);
+    
+    const newEvent = (type: 'keyup' | 'keypress' | 'keydown', keyCode: number): KbEvent => {
+        let now = Date.now();
+        const time = new UnixTimeval(Math.floor(now / 1000), 1000 * (now % 1000));
+        return {
+            dev: 'dumy',
+            time,
+            keyCode: keyCode,
+            keyName: KeysCodes[keyCode],
+            type,
+        } as KbEvent;
+    }
+
+    reader.on
+
+    digestEvent(newEvent('keydown', 48));
+    await delay(100);
+    digestEvent(newEvent('keyup', 48));
+}
+
+// private async digestEvent(event: KbEvent): Promise<void> {
+
 
 // const K6 = new LinuxInputEvent('usb-Antecer_AmusingKeyPadK6-event-kbd');
 // Ok 
