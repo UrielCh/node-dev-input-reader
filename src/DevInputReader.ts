@@ -146,7 +146,7 @@ export default class DevInputReader extends EventEmitter {
         const type: SimpleEventsType = event.type;
 
         this.emit(type as any, event);
-
+        // get / init key internal state
         let keyStatus = this.keyStatus[event.keyCode];
         if (!keyStatus) {
             keyStatus = new KeyInternalState();
