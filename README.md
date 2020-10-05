@@ -2,7 +2,7 @@
 
 Read input from /dev/input/* on a linux Host.
 
-## feature
+## Feature
 
 * Detect double press / click
 * Detect long press / click
@@ -12,9 +12,9 @@ Read input from /dev/input/* on a linux Host.
 * Detect device type (event/joystick/mouse)
 * Writen in Typescript
 
-## usage
+## Usage
 
-with raw events:
+With raw events:
 ```typescript
     // use RAW event
     const reader = new DevInputReader('event0');
@@ -24,7 +24,7 @@ with raw events:
 
 ```
 
-with syntetic events (recommanded):
+With syntetic events (recommanded):
 ```typescript
     // use simple events
     const reader = new DevInputReader('event0'm { retryInterval: 10000});
@@ -35,7 +35,7 @@ with syntetic events (recommanded):
     // in case oh hardware lost, will reconnect every retryInterval 10sec
 ```
 
-with syntetic events with double/long click detection (if needed):
+With syntetic events with double/long click detection (if needed):
 ```typescript
     // use simple events
     const reader = new DevInputReader('event0', { retryInterval: 10000, longPress: 5000, doublePress: 300 });
