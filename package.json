@@ -24,7 +24,7 @@
   "scripts": {
     "build": "tsc -p .",
     "build:watch": "tsc -p . --watch",
-    "prepare": "npm run build",
+    "prepare": "npm build && npm test",
     "clean": "rimraf src/*.js test/*.js src/*.d.ts test/*.d.ts",
     "test": "mocha -r ts-node/register test/*.ts"
   },

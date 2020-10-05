@@ -14,7 +14,6 @@ Read input from /dev/input/* on a linux Host.
 
 ## usage
 
-// , { retryInterval: 500, longPress: 2000, doublePress: 300 }
 with raw event:
 ```typescript
     // use RAW event
