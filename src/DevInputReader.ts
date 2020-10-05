@@ -35,7 +35,7 @@ export default class DevInputReader extends EventEmitter {
 
     listener = 0;
 
-    public static registerKey(id: number, name: string) {
+    public static registerKey(id: number, name: string): void {
         KeysCodes[id] = name;
     }
 
@@ -86,6 +86,7 @@ export default class DevInputReader extends EventEmitter {
             if (eventPath)
                 lnk = fs.readlinkSync(eventPath, 'utf8');
         } catch (e) {
+            // keep lnk as its
         }
         const m = lnk.match(/\/([a-z]+)\d+$/);
         if (!m) {
@@ -102,14 +103,14 @@ export default class DevInputReader extends EventEmitter {
             this.data = fs.createReadStream(eventPath);
             if (this.devType === 'event')
                 this.data.on('data', (data: Buffer) => {
-                    let event: KbEvent | null = this.parseEvent(data);
+                    const event: KbEvent | null = this.parseEvent(data);
                     if (event) {
                         this.digestEvent(event);
                     }
                 });
             else if (this.devType === 'js')
                 this.data.on('data', (data: Buffer) => {
-                    let event: JsEvent | null = this.parseJoystick(data);
+                    const event: JsEvent | null = this.parseJoystick(data);
                     if (event) {
                         this.emit('joystick', event)
                     }
@@ -145,7 +146,7 @@ export default class DevInputReader extends EventEmitter {
     private async digestEvent(event: KbEvent): Promise<void> {
         const type: SimpleEventsType = event.type;
 
-        this.emit(type as any, event);
+        this.emit(type, event);
         // get / init key internal state
         let keyStatus = this.keyStatus[event.keyCode];
         if (!keyStatus) {
@@ -154,7 +155,7 @@ export default class DevInputReader extends EventEmitter {
         }
         switch (event.type) {
             case 'keydown':
-            case 'keypress':
+            case 'keypress': {
                 keyStatus.state = KeyState.Down;
                 keyStatus.prevDown = keyStatus.down;
                 keyStatus.down = event.time;
@@ -180,7 +181,8 @@ export default class DevInputReader extends EventEmitter {
                     }
                 }
                 break;
-            case 'keyup':
+            }
+            case 'keyup': {
                 this.keyCodePresses.delete(event.keyCode);
                 if (event.keyName)
                     this.keyNamePresses.delete(event.keyName);
@@ -202,7 +204,7 @@ export default class DevInputReader extends EventEmitter {
                 keyStatus.state = KeyState.Up;
                 keyStatus.prevUp = keyStatus.up;
                 const durationDoubleMs = keyStatus.up.fromMs(keyStatus.prevDown);
-                if (this.options.doublePress && durationDoubleMs < this.options.doublePress) {
+                if (this.options.doublePress && (durationDoubleMs < this.options.doublePress)) {
                     this.emit('double', {
                         dev: this.dev,
                         time: keyStatus.up,
@@ -231,6 +233,7 @@ export default class DevInputReader extends EventEmitter {
                     }
                 }
                 break;
+            }
         }
     }
 
@@ -292,7 +295,7 @@ export default class DevInputReader extends EventEmitter {
     ///////////////////////////
     // @param event EVENTS
     //
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     once(event: string, listener: (...args: any[]) => void): this {
         if (specialEventsSet.has(event))
             throw Error(`once not implemented on event: "${event}"`);
@@ -310,7 +313,9 @@ export default class DevInputReader extends EventEmitter {
     on(event: 'joystick', listener: (event: JsEvent) => void): this;
     on(event: 'connecting', listener: (event: string) => void): this;
     on(event: 'error', listener: (event: Error) => void): this;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     on(event: AllEventsType, listener: (...args: any[]) => void): this {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return this.addListener(event as any, listener);
     }
 
@@ -319,14 +324,11 @@ export default class DevInputReader extends EventEmitter {
     addListener(event: 'joystick', listener: (event: JsEvent) => void): this;
     addListener(event: 'connecting', listener: (event: string) => void): this;
     addListener(event: 'error', listener: (event: Error) => void): this;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addListener(event: AllEventsType, listener: (...args: any[]) => void): this {
-        try {
-            super.on(event, listener);
-            if (specialEventsSet.has(event) && ++this.listener === 1) {
-                this.startLoop();
-            }
-        } catch (e) {
-            throw e;
+        super.on(event, listener);
+        if (specialEventsSet.has(event) && ++this.listener === 1) {
+            this.startLoop();
         }
         return this;
     }
@@ -336,7 +338,9 @@ export default class DevInputReader extends EventEmitter {
     off(event: 'joystick', listener: (event: JsEvent) => void): this;
     off(event: 'connecting', listener: (event: string) => void): this;
     off(event: 'error', listener: (error: Error) => void): this;
-    off(event: AllEventsType, listener: (...args: any[]) => void) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    off(event: AllEventsType, listener: (...args: any[]) => void): this {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return this.removeListener(event as any, listener);
     }
 
@@ -345,14 +349,11 @@ export default class DevInputReader extends EventEmitter {
     removeListener(event: 'joystick', listener: (event: JsEvent) => void): this;
     removeListener(event: 'connecting', listener: (event: string) => void): this;
     removeListener(event: 'error', listener: (error: Error) => void): this;
-    removeListener(event: AllEventsType, listener: (...args: any[]) => void) {
-        try {
-            super.off(event, listener);
-            if (specialEventsSet.has(event) && --this.listener === 0) {
-                this.stop();
-            }
-        } catch (e) {
-            throw e;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    removeListener(event: AllEventsType, listener: (...args: any[]) => void): this {
+        super.off(event, listener);
+        if (specialEventsSet.has(event) && --this.listener === 0) {
+            this.stop();
         }
         return this;
     }
@@ -362,7 +363,9 @@ export default class DevInputReader extends EventEmitter {
     emit(event: 'joystick', data: JsEvent): boolean;
     emit(event: 'connecting', data: string): boolean;
     emit(event: 'error', data: Error): boolean;
-    emit(event: AllEventsType, data: any) {
+
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    emit(event: AllEventsType, data: any): boolean {
         return super.emit(event, data);
     }
 }

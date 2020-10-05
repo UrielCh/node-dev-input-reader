@@ -17,7 +17,7 @@ export default class KeyInternalState {
         this.flush();
     }
 
-    public flush() {
+    public flush(): void {
         this.state = KeyState.Up;
         this.up = null;
         this.down = null;

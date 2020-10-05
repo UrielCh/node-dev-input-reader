@@ -1,14 +1,20 @@
 import * as DIR from "../src/";
 import KeysCodes from "../src/KeysCodes";
 
+
+interface IDigest {
+  digestEvent(event: DIR.KbEvent): Promise<void>;
+}
+
 /**
  * Call private function
  * 
  */
-export const privateDigestEvent = (reader: DIR.DevInputReader, event: DIR.KbEvent): Promise<void> => (reader as any).digestEvent(event);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const privateDigestEvent = (reader: DIR.DevInputReader, event: DIR.KbEvent): Promise<void> => (reader as any as IDigest).digestEvent(event);
 
 export const newEvent = (type: DIR.SimpleEventsType, keyCode: number): DIR.KbEvent => {
-  let now = Date.now();
+  const now = Date.now();
   const time = new DIR.UnixTimeval(Math.floor(now / 1000), 1000 * (now % 1000));
   return {
     dev: 'dumy',
@@ -50,7 +56,7 @@ export enum TestKey {
   N = 49,
 }
 
-export function preparEnv(actions: DIR.AllEventsType[], options?: DIR.DevInputReaderOption) {
+export function preparEnv(actions: DIR.AllEventsType[], options?: DIR.DevInputReaderOption): { reader: DIR.DevInputReader, array: string[], ev: (type: DIR.SimpleEventsType, keyCode: number) => Promise<void> } {
   const reader = new DIR.DevInputReader('dummy', options);
   const array = listenAction(reader, actions);
   const ev = (type: DIR.SimpleEventsType, keyCode: number) => privateDigestEvent(reader, newEvent(type, keyCode));
