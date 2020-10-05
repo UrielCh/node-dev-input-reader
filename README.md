@@ -14,7 +14,7 @@ Read input from /dev/input/* on a linux Host.
 
 ## usage
 
-with raw event:
+with raw events:
 ```typescript
     // use RAW event
     const reader = new DevInputReader('event0');
@@ -53,10 +53,10 @@ with syntetic events with double/long click detection (if needed):
 > Why a new Module ?
 
 There is a lot of existing module that can deal with input:
-[dev-input](https://www.npmjs.com/package/dev-input) Looks nice in typescript, but no docs, only used by hist owner.
-[linux-keyboard-catcher](https://www.npmjs.com/package/linux-keyboard-catcher) highly Keyboard oriented, simple interface.
-[node-keylogger](https://www.npmjs.com/package/node-keylogger) very low level + forck from [node-keyboard](https://github.com/Bornholm/node-keyboard) + contains bug..
-[raw-keyboard](https://www.npmjs.com/package/raw-keyboard) very low level + use C code.
+- [dev-input](https://www.npmjs.com/package/dev-input) Looks nice in typescript, but no docs, only used by hist owner.
+- [linux-keyboard-catcher](https://www.npmjs.com/package/linux-keyboard-catcher) highly Keyboard oriented, simple interface.
+- [node-keylogger](https://www.npmjs.com/package/node-keylogger) very low level + forck from [node-keyboard](https://github.com/Bornholm/node-keyboard) + contains bug..
+- [raw-keyboard](https://www.npmjs.com/package/raw-keyboard) very low level + use C code.
 
 Relative package:
-[linux-key-info](https://www.npmjs.com/package/linux-key-info) Key mapping for keyboard, I may integrate it on day.
+- [linux-key-info](https://www.npmjs.com/package/linux-key-info) Key mapping for keyboard, I may integrate it on day.
