@@ -168,7 +168,7 @@ export default class DevInputReader extends EventEmitter {
                     if (keyStatus.state === KeyState.Down && keyStatus.down === event.time) {
                         this.emit('long', {
                             dev: this.dev,
-                            time: keyStatus.up,
+                            time: keyStatus.down,
                             durationMs: this.options.longPress,
                             keyCode: event.keyCode,
                             keyName: event.keyName,
