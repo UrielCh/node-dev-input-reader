@@ -32,7 +32,7 @@
   "bugs": "https://github.com/UrielCh/node-dev-input-reader/issues",
   "scripts": {
     "build": "tsc --pretty --project . && tsc --pretty --project tsconfig-cjs.json",
-    "prepare": "npm run lint && npm build && npm test",
+    "prepare": "npm run lint && npm run build && npm run test",
     "clean": "rimraf dist test/*.js test/*.d.ts",
     "lint": "eslint . --ext .ts",
     "test": "mocha -r ts-node/register test/*.ts"
