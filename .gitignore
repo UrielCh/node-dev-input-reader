@@ -3,3 +3,4 @@ test/*.js
 test/*.d.ts
 src/*.js
 src/*.d.ts
+dist
