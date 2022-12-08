@@ -1,5 +1,5 @@
 import assert from 'assert';
-import * as DIR from "../src";
+import * as DIR from "../src/index.js";
 import { TestKey, preparEnv } from "./commonTest";
 
 describe('Raw Test', () => {

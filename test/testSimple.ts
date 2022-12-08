@@ -1,6 +1,6 @@
 import assert from 'assert';
-import * as DIR from "../src";
-import { TestKey, preparEnv } from "./commonTest";
+import * as DIR from "../src/index.js";
+import { TestKey, preparEnv } from "./commonTest.js";
 
 describe('sintetic event:', () => {
     {

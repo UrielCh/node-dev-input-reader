@@ -2,6 +2,7 @@
   "name": "dev-input-reader",
   "version": "1.0.0",
   "description": "read input from /dev/input/*",
+  "type": "module",
   "main": "dist/cjs/index.js",
   "module": "src/esm/index.js",
   "typings": "src/esm/index.d.ts",
@@ -35,7 +36,7 @@
     "prepare": "npm run lint && npm run build && npm run test",
     "clean": "rimraf dist test/*.js test/*.d.ts",
     "lint": "eslint . --ext .ts",
-    "test": "mocha -r ts-node/register test/*.ts"
+    "test": "mocha test/*.ts"
   },
   "dependencies": {},
   "devDependencies": {
