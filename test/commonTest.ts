@@ -1,6 +1,4 @@
-import * as DIR from "../src/";
-import KeysCodes from "../src/KeysCodes";
-
+import * as DIR from "../src/index.js";
 
 interface IDigest {
   digestEvent(event: DIR.KbEvent): Promise<void>;
@@ -20,7 +18,7 @@ export const newEvent = (type: DIR.SimpleEventsType, keyCode: number): DIR.KbEve
     dev: 'dumy',
     time,
     keyCode: keyCode,
-    keyName: KeysCodes[keyCode],
+    keyName: DIR.KeysCodes[keyCode],
     type,
   } as DIR.KbEvent;
 }

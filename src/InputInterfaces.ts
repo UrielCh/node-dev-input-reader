@@ -1,5 +1,5 @@
-import { EVENT_TYPES } from "./enums";
-import UnixTimeval from "./UnixTimeval";
+import { EVENT_TYPES } from "./enums.js";
+import UnixTimeval from "./UnixTimeval.js";
 
 export interface JsEvent {
     dev: string;

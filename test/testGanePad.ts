@@ -1,6 +1,6 @@
 import assert from 'assert';
-import * as DIR from "../src/";
-import { preparEnv } from "./commonTest";
+import * as DIR from "../src/index.js";
+import { preparEnv } from "./commonTest.js";
 
 describe('Test custom gamepad event', () => {
   const { array, ev } = preparEnv(['simple', 'double', 'long']);

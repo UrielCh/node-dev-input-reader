@@ -1,4 +1,4 @@
-import { UnixTimeval } from ".";
+import UnixTimeval from "./UnixTimeval.js";
 
 export enum KeyState {
     Up = 0,

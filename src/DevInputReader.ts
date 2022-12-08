@@ -1,11 +1,11 @@
-import fs, { ReadStream } from 'fs';
-import { EventEmitter } from 'events';
-import KeysCodes from './KeysCodes';
-import delay from './delay';
-import { KbEvent2, JsEvent, KbEvent } from './InputInterfaces';
-import UnixTimeval from './UnixTimeval';
-import { SUPPORTED_USB_DEVICE_TYPES, SUPPORTED_USB_DEVICE_TYPES_SET, EVENT_TYPES } from './enums';
-import KeyInternalState, { KeyState } from './KeyInternalState';
+import fs, { ReadStream } from 'node:fs';
+import { EventEmitter } from 'node:events';
+import KeysCodes from './KeysCodes.js';
+import delay from './delay.js';
+import { KbEvent2, JsEvent, KbEvent } from './InputInterfaces.js';
+import UnixTimeval from './UnixTimeval.js';
+import { SUPPORTED_USB_DEVICE_TYPES, SUPPORTED_USB_DEVICE_TYPES_SET, EVENT_TYPES } from './enums.js';
+import KeyInternalState, { KeyState } from './KeyInternalState.js';
 
 export const standardEvents = ['error', 'connecting'] as const;
 export const simpleEvents = ['keyup', 'keypress', 'keydown'] as const; // Keep this order

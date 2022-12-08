@@ -2,6 +2,8 @@
 
 Read input from /dev/input/* on a linux Host.
 
+Dual Stack package ESM + CJS, should work in deno
+
 ## Feature
 
 * Detect double press / click
