@@ -30,6 +30,6 @@ describe('Test custom gamepad event', () => {
     await DIR.delay(1);
     ev('keyup', 290);
     await DIR.delay(1);
-    assert.strictEqual(array.join(','), 'simplePAD_A,simplePAD_B')
+    assert.strictEqual(array.join(','), 'simplePAD_A,simplePAD_B', 'Should RVC 2 simple Pad button')
   })
 });

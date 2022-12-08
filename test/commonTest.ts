@@ -8,8 +8,8 @@ interface IDigest {
  * Call private function
  * 
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const privateDigestEvent = (reader: DIR.DevInputReader, event: DIR.KbEvent): Promise<void> => (reader as any as IDigest).digestEvent(event);
+// use unknown cast to bypass private method
+export const privateDigestEvent = (reader: DIR.DevInputReader, event: DIR.KbEvent): Promise<void> => (reader as unknown as IDigest).digestEvent(event);
 
 export const newEvent = (type: DIR.SimpleEventsType, keyCode: number): DIR.KbEvent => {
   const now = Date.now();
@@ -50,8 +50,8 @@ export function listenAction(reader: DIR.DevInputReader, actions: DIR.AllEventsT
 }
 
 export enum TestKey {
-  B = 48,
-  N = 49,
+  KEY_B = 48,
+  KEY_N = 49,
 }
 
 export function preparEnv(actions: DIR.AllEventsType[], options?: DIR.DevInputReaderOption): { reader: DIR.DevInputReader, array: string[], ev: (type: DIR.SimpleEventsType, keyCode: number) => Promise<void> } {

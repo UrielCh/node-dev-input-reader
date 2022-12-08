@@ -8,9 +8,9 @@ describe('sintetic event:', () => {
 
         it('single', async () => {
             array.splice(0, array.length)
-            ev('keydown', 48);
+            ev('keydown', TestKey.KEY_B);
             await DIR.delay(1);
-            ev('keyup', TestKey.B);
+            ev('keyup', TestKey.KEY_B);
             await DIR.delay(1);
             assert.strictEqual(array.join(','), 'simpleB')
             await DIR.delay(1);
@@ -18,13 +18,13 @@ describe('sintetic event:', () => {
 
         it('Key combinaison', async () => {
             array.splice(0, array.length)
-            ev('keydown', TestKey.B);
+            ev('keydown', TestKey.KEY_B);
             await DIR.delay(1);
-            ev('keydown', TestKey.N);
+            ev('keydown', TestKey.KEY_N);
             await DIR.delay(1);
-            ev('keyup', TestKey.B);
+            ev('keyup', TestKey.KEY_B);
             await DIR.delay(1);
-            ev('keyup', TestKey.N);
+            ev('keyup', TestKey.KEY_N);
             await DIR.delay(1);
             assert.strictEqual(array.join(','), 'simpleB[N],simpleN')
         }); // .timeout(600000)
